@@ -1,0 +1,16 @@
+camel:
+  rest:
+    enabled: true
+    component: servlet
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/camelproject
+    username: postgres
+    password: abc123
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
