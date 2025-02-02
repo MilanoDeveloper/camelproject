@@ -15,53 +15,11 @@ import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
 @ComponentScan("com.camelrest.camelrest")
-public class CamelrestApplication extends RouteBuilder {
+public class CamelrestApplication{
 
 	public static void main(String[] args) {
 		SpringApplication.run(CamelrestApplication.class, args);
 	}
 
-	@Autowired
-	private UserRepository userRepository;
 
-	@Bean
-    public CamelContext camelContext(ApplicationContext applicationContext)  { // Este método
-        return new SpringCamelContext(applicationContext);
-    }
-
-	@Override
-	public void configure() throws Exception {
-		restConfiguration()
-				.component("servlet") // Define que usaremos o Servlet do Spring Boot
-				.contextPath("/api")
-				.bindingMode(RestBindingMode.json) // Configura JSON como formato de resposta
-				.enableCORS(true); // Habilita CORS para evitar problemas
-
-		rest("/usuarios")
-				.post().type(User.class).routeId("create-user").to("direct:createUser");
-
-		from("direct:createUser")
-				.process(exchange -> {
-					User user = exchange.getMessage().getBody(User.class);
-					userRepository.save(user); // Usa o repositório injetado
-					exchange.getMessage().setBody("Usuário cadastrado com sucesso!");
-				});
-		rest("/usuarios")
-				.post().type(User.class).routeId("create-user").to("direct:createUser");
-
-		from("direct:createUser")
-				.process(exchange -> {
-					User user = exchange.getMessage().getBody(User.class);
-					userRepository.save(user);
-					exchange.getMessage().setBody("Usuário cadastrado com sucesso!");
-				});
-
-		rest("/teste")
-				.get()
-				.to("direct:teste");
-
-		from("direct:teste")
-				.setBody(constant("Teste OK!"));
-	}
-	
 }
